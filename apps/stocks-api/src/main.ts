@@ -2,7 +2,11 @@
  * This is not a production server yet!
  * This is only a minimal backend to get started.
  **/
-import { Server } from 'hapi';
+import * as Wreck from '@hapi/wreck';
+import { Request, ResponseToolkit, Server } from 'hapi';
+import { environment } from './environments/environment';
+
+const cache: { [url: string]: any } = {};
 
 const init = async () => {
   const server = new Server({
@@ -17,6 +21,32 @@ const init = async () => {
       return {
         hello: 'world'
       };
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/beta/stock/{symbol}/chart/{range}',
+    handler: async (request: Request, h: ResponseToolkit) => {
+      const { symbol, range } = request.params;
+      const { token } = request.query;
+
+      const url = `${
+        environment.stocksApiURL
+      }/beta/stock/${symbol}/chart/${range}?token=${token}`;
+
+      if (cache[url]) {
+        return cache[url];
+      }
+
+      const { payload } = await Wreck.get(url);
+
+      cache[url] = payload;
+
+      return payload;
+    },
+    options: {
+      cors: true
     }
   });
 
