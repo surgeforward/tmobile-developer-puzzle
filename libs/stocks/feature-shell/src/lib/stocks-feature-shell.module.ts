@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import {
+  MatButtonModule,
+  MatDatepickerModule,
   MatFormFieldModule,
   MatInputModule,
-  MatSelectModule,
-  MatButtonModule
+  MatNativeDateModule
 } from '@angular/material';
 import { RouterModule } from '@angular/router';
 import { SharedUiChartModule } from '@coding-challenge/shared/ui/chart';
 import { StocksComponent } from './stocks/stocks.component';
-import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   imports: [
@@ -20,9 +21,10 @@ import { ReactiveFormsModule } from '@angular/forms';
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule,
     MatButtonModule,
-    SharedUiChartModule
+    SharedUiChartModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   declarations: [StocksComponent]
 })
