@@ -1,15 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PriceQueryFacade } from '@coding-challenge/stocks/data-access-price-query';
+import { Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'coding-challenge-stocks',
   templateUrl: './stocks.component.html',
   styleUrls: ['./stocks.component.css']
 })
-export class StocksComponent {
+export class StocksComponent implements OnDestroy {
   stockPickerForm: FormGroup;
-  symbol: string;
 
   quotes$ = this.priceQuery.priceQueries$;
 
@@ -24,13 +25,17 @@ export class StocksComponent {
     { viewValue: 'One month', value: '1m' }
   ];
 
+  private valueChangeSub: Subscription;
+
   constructor(private fb: FormBuilder, private priceQuery: PriceQueryFacade) {
     this.stockPickerForm = fb.group({
       symbol: [null, Validators.required],
       period: [null, Validators.required]
     });
 
-    this.stockPickerForm.valueChanges.subscribe(() => this.fetchQuote());
+    this.valueChangeSub = this.stockPickerForm.valueChanges
+      .pipe(debounceTime(300))
+      .subscribe(() => this.fetchQuote());
   }
 
   fetchQuote() {
@@ -38,5 +43,9 @@ export class StocksComponent {
       const { symbol, period } = this.stockPickerForm.value;
       this.priceQuery.fetchQuote(symbol, period);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.valueChangeSub.unsubscribe();
   }
 }
