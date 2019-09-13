@@ -3,7 +3,7 @@
     <input
       matInput
       placeholder="Symbol e.g AAPL"
-      formControlName="symbol"
+      [formControl]="symbolCtrl"
       value=""
     />
     <mat-error
@@ -18,15 +18,17 @@
   </mat-form-field>
 
   <mat-form-field>
-    <mat-label>Favorite time period</mat-label>
-    <mat-select formControlName="period">
-      <mat-option
-        *ngFor="let timePeriod of timePeriods"
-        [value]="timePeriod.value"
-      >
-        {{ timePeriod.viewValue }}
-      </mat-option>
-    </mat-select>
+    <mat-label>From date</mat-label>
+    <input matInput [max]="stockPickerForm.get('toDate').value || today" [formControl]="fromDateCtrl" [matDatepicker]="fromPicker" placeholder="Choose a date">
+    <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+    <mat-datepicker #fromPicker></mat-datepicker>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>To date</mat-label>
+    <input matInput [min]="stockPickerForm.get('fromDate').value" [max]="today" [formControl]="toDateCtrl" [matDatepicker]="toPicker" placeholder="Choose a date">
+    <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+    <mat-datepicker #toPicker></mat-datepicker>
   </mat-form-field>
 
   <button (click)="fetchQuote()" mat-raised-button>Go</button>
